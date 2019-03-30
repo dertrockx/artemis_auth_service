@@ -67,9 +67,9 @@ class ProtectedApi(Resource):
 	def post(self):
 		return {'message' : 'Accessed'}
 
-api.add_resource(UserLogin, '/login')
-api.add_resource(UserLogoutRefresh, '/logout/refresh')
-api.add_resource(UserLogoutAccess, '/logout/access')
-api.add_resource(TokenRefresh, '/token/refresh')
-api.add_resource(ProtectedApi, '/protected')
-api.add_resource(UserList, '/users')
+api.add_resource(UserLogin, '/login/')
+api.add_resource(UserLogoutRefresh, '/logout/refresh/')
+api.add_resource(UserLogoutAccess, '/logout/access/')
+api.add_resource(TokenRefresh, '/token/refresh/')
+api.add_resource(ProtectedApi, '/protected/')
+api.add_resource(UserList, '/users/')
