@@ -31,6 +31,32 @@ class ListPostAPIView(Resource):
 			return response.json(), 200
 		return 500
 
+class CreatePostAPIView(Resource):
+	@jwt_required
+	def post(self):
+		parser = reqparse.RequestParser()
+		parser.add_argument('content', help='This field is required', required=True)
+		parser.add_argument('user_id', help='This field is required', required=True)
+
+		# TODO: Add a method to check if user exists or not
+
+		data = parser.parse_args()
+		headers = {
+			"Content-Type" : "application/json"
+		}
+
+		response = requests.post(
+				BASE_ENDPOINT + '/posts/create/',
+				data = json.dumps(data),
+				headers = headers
+			)
+		if response.status_code == requests.codes.ok:
+			return response.json(), 200
+		return {
+			"message" : "Error in creating post.",
+			"details" : response.json()
+		}, 401
+
 class DetailPostAPIView(Resource):
 	@jwt_required
 	def get(self, post_id):
@@ -101,3 +127,4 @@ class DetailPostAPIView(Resource):
 		'''
 api.add_resource(ListPostAPIView, '/posts/')
 api.add_resource(DetailPostAPIView, '/posts/<int:post_id>/')
+api.add_resource(CreatePostAPIView, '/posts/create/')
