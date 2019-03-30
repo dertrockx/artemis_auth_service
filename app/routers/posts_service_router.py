@@ -5,9 +5,9 @@ from flask import Blueprint
 import requests, json
 
 
-router_blueprint = Blueprint('routers', __name__)
+post_blueprint = Blueprint('routers', __name__)
 
-api = Api(router_blueprint)
+api = Api(post_blueprint)
 
 BASE_ENDPOINT = 'http://127.0.0.1:8001'
 

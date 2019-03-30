@@ -5,7 +5,8 @@ from flask_migrate import Migrate
 from auth_module.models import db as auth_db
 from auth_module.auth_resource import auth_blueprint
 
-from routers.posts_service_router import router_blueprint
+from routers.posts_service_router import post_blueprint
+from routers.comments_service_router import comment_blueprint
 
 app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = 'jwt-secret-string'
@@ -14,8 +15,8 @@ auth_db.init_app(app)
 jwt = JWTManager(app)
 
 app.register_blueprint(auth_blueprint)
-app.register_blueprint(router_blueprint)
-
+app.register_blueprint(post_blueprint)
+app.register_blueprint(comment_blueprint)
 
 def create_app():
 	app = Flask(__name__)
