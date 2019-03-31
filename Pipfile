@@ -12,7 +12,10 @@ flask-restful = "*"
 flask-jwt-extended = "*"
 flask-marshmallow = "*"
 marshmallow-sqlalchemy = "*"
+flask-migrate = "*"
+requests = "*"
 mysqlclient = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.5"

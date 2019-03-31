@@ -39,13 +39,6 @@ class UserLogin(Resource):
 			}
 		return {"message" : "Passwords do not match!"}
 
-class UserList(Resource):
-	@jwt_required
-	def get(self):
-		stud_ = StudentSchema()
-		students = [ stud_.dump(student).data for student in Students.query.all()]
-		return students
-
 class UserLogoutAccess(Resource):
 	def post(self):
 		return {'message': 'User logout access'}
@@ -72,4 +65,3 @@ api.add_resource(UserLogoutRefresh, '/logout/refresh/')
 api.add_resource(UserLogoutAccess, '/logout/access/')
 api.add_resource(TokenRefresh, '/token/refresh/')
 api.add_resource(ProtectedApi, '/protected/')
-api.add_resource(UserList, '/users/')
