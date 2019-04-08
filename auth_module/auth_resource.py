@@ -21,13 +21,16 @@ user_parser.add_argument('password', help='This field cannot be blank', required
 
 class UserLogin(Resource):
 	def post(self):
-		data 		= user_parser.parse_args()
+		try:
+			data 		= user_parser.parse_args()
+		except ValueError:
+			return {"message" : "Data must be in JSON format"}, 400
 		lrn 		= data.get('lrn', None)
 		username 	= data.get('username', None)
 		password 	= data.get('password')
 		student 	= Students.query.filter(or_(Students.lrn == lrn, Students.username == username)).first()
 		if not student:
-			return {'message': "User not found"}
+			return {'message': "User not found"}, 404
 
 		if student.check_password(password):	
 			access_token = create_access_token(identity = student.username)
@@ -37,7 +40,7 @@ class UserLogin(Resource):
 					'access_token' : access_token,
 					'refresh_token' : refresh_token
 			}
-		return {"message" : "Passwords do not match!"}
+		return {"message" : "Passwords do not match!"}, 404
 
 class UserLogoutAccess(Resource):
 	def post(self):
