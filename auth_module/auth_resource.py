@@ -30,7 +30,7 @@ class UserLogin(Resource):
 		password 	= data.get('password')
 		student 	= Students.query.filter(or_(Students.lrn == lrn, Students.username == username)).first()
 		if not student:
-			return {'message': "User not found"}, 404
+			return {'message': "User not found", "status": "ERROR"}
 
 		if student.check_password(password):	
 			access_token = create_access_token(identity = student.username)
@@ -38,9 +38,13 @@ class UserLogin(Resource):
 			return {
 					'message': 'Logged in!',
 					'access_token' : access_token,
-					'refresh_token' : refresh_token
+					'refresh_token' : refresh_token,
+					"status": "OK",
+					"username": student.username,
+					"id": student.id,
+					"LRN": student.lrn
 			}
-		return {"message" : "Passwords do not match!"}, 404
+		return {"message" : "Passwords do not match!", "status": "ERROR"}
 
 class UserLogoutAccess(Resource):
 	def post(self):

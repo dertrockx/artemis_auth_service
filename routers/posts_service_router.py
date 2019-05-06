@@ -1,4 +1,4 @@
-from flask_restful import Api, Resource, reqparse
+from flask_restful import Api, Resource, reqparse, request
 from flask_jwt_extended import jwt_required
 
 from flask import Blueprint
@@ -18,25 +18,29 @@ class ListPostAPIView(Resource):
 		parser = reqparse.RequestParser()
 		parser.add_argument('user_id', type=int)
 		data = parser.parse_args()
+		args = request.args
 		headers = {
 			'Content-Type' : 'application/json'
 		}
-		user_id = data.get('user_id', None)
+		user_id = data.get('user_id') or args.get('user_id') or None
+		print(user_id)
 		sent_data = {}
 		if user_id is not None:
 			sent_data['user_id'] = user_id
 
 		response = requests.get(BASE_ENDPOINT + '/posts/', data=json.dumps(sent_data), headers=headers)
+		print(response.json())
 		if response.status_code == requests.codes.ok:
 			return response.json(), 200
-		return 500
+		return response.json(), 500
 
 class CreatePostAPIView(Resource):
-	@jwt_required
+	# @jwt_required
 	def post(self):
+		print("YEAH 1")
 		parser = reqparse.RequestParser()
 		parser.add_argument('content', help='This field is required', required=True)
-		parser.add_argument('user_id', help='This field is required', required=True)
+		parser.add_argument('student_id', help='This field is required', required=True)
 
 		# TODO: Add a method to check if user exists or not
 
@@ -44,18 +48,19 @@ class CreatePostAPIView(Resource):
 		headers = {
 			"Content-Type" : "application/json"
 		}
-
+		print("YEAH 2")
 		response = requests.post(
 				BASE_ENDPOINT + '/posts/create/',
 				data = json.dumps(data),
 				headers = headers
 			)
+		print(response.json())
 		if response.status_code == requests.codes.ok:
 			return response.json(), 200
 		return {
 			"message" : "Error in creating post.",
 			"details" : response.json()
-		}, 401
+		}
 
 class DetailPostAPIView(Resource):
 	@jwt_required
