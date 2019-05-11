@@ -65,7 +65,7 @@ class CreatePostAPIView(Resource):
 class DetailPostAPIView(Resource):
 	@jwt_required
 	def get(self, post_id):
-		
+		print("YEAH")
 		headers = {
 			'Content-Type' : 'application/json'
 		}

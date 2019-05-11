@@ -8,7 +8,7 @@ from flask_jwt_extended import (
 							get_jwt_identity, 
 							get_raw_jwt)
 from sqlalchemy import or_
-from .models import Students
+from .models import Students, db
 from .schema import StudentSchema
 
 auth_blueprint = Blueprint('auth', __name__)
@@ -28,7 +28,7 @@ class UserLogin(Resource):
 		lrn 		= data.get('lrn', None)
 		username 	= data.get('username', None)
 		password 	= data.get('password')
-		student 	= Students.query.filter(or_(Students.lrn == lrn, Students.username == username)).first()
+		student 	= Students.query.filter_by(username=username).first()
 		if not student:
 			return {'message': "User not found", "status": "ERROR"}
 
@@ -42,9 +42,55 @@ class UserLogin(Resource):
 					"status": "OK",
 					"username": student.username,
 					"id": student.id,
-					"LRN": student.lrn
 			}
 		return {"message" : "Passwords do not match!", "status": "ERROR"}
+
+class UserRegistration(Resource):
+	def post(self):
+		parser = reqparse.RequestParser()
+		parser.add_argument('username', required=True, help='This field is required')
+		parser.add_argument('password', required=True, help='This field is required')
+		parser.add_argument('firstName', required=True, help='This field is required')
+		parser.add_argument('middleName', required=True, help='This field is required')
+		parser.add_argument('lastName', required=True, help='This field is required')
+		try:
+			data = parser.parse_args()
+		except ValueError:
+			return {"message" : "Data must be in JSON format"}, 400
+
+		username = data.get('username')
+
+		user = Students.query.filter_by(username=username).first()
+		if user:
+			return { 
+				'message' : "User with username \"{}\" is already taken.".format(username),
+				"status": "ERROR"
+				}
+
+		user = Students(
+				username 	= username, 
+				firstname 	= data.get('firstName'),
+				middlename = data.get('middleName'),
+				lastname = data.get('lastName')
+			)
+		user.set_password(data.get('password'))
+		db.session.add(user)
+		db.session.commit()
+		return { "message" : "Successfully created user!", "user": StudentSchema().dump(user) }
+
+
+class UserLogout(Resource):
+	def post(self):
+		parser 	= reqparse.RequestParser()
+		try:
+			data = parser.parse_args()
+		except ValueError:
+			return { "message": "Data must be in JSON format", "status": "ERROR" }
+		username 	= data.get('username')
+		firstName 	= data.get('firstName')
+		middleName 	= data.get('middleName')
+		lastName 	= data.get('lastName')
+
 
 class UserLogoutAccess(Resource):
 	def post(self):
@@ -68,6 +114,7 @@ class ProtectedApi(Resource):
 		return {'message' : 'Accessed'}
 
 api.add_resource(UserLogin, '/login/')
+api.add_resource(UserRegistration, '/register/')
 api.add_resource(UserLogoutRefresh, '/logout/refresh/')
 api.add_resource(UserLogoutAccess, '/logout/access/')
 api.add_resource(TokenRefresh, '/token/refresh/')

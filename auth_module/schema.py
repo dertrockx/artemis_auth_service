@@ -6,4 +6,4 @@ ma = Marshmallow()
 class StudentSchema(ma.ModelSchema):
 	class Meta:
 		model = Students
-		fields = ('id', 'lrn', 'username', 'firstname', 'middlename', 'lastname')
+		fields = ('id', 'username', 'firstname', 'middlename', 'lastname')

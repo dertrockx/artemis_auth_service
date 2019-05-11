@@ -1,4 +1,4 @@
-from flask_restful import Api, Resource, reqparse
+from flask_restful import Api, Resource, reqparse, request
 from flask_jwt_extended import jwt_required
 
 from flask import Blueprint
@@ -18,7 +18,9 @@ class ListCommentAPIView(Resource):
 		parser = reqparse.RequestParser()
 		parser.add_argument('user_id', type=int)
 		parser.add_argument('post_id', type=int)
-		data = parser.parse_args()
+		args = request.args
+		data = parser.parse_args() or args
+		print(data)
 		headers = {
 			'Content-Type' : 'application/json'
 		}

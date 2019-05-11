@@ -12,8 +12,9 @@ from routers.comments_service_router import comment_blueprint
 
 app = Flask(__name__)
 
-CORS(app) # applying flask-cors to allow CORS
-
+# cors = CORS(app, resources = { r"*", { "origins" : "*" }}) # applying flask-cors to allow CORS
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
+cors = CORS(app)
 app.config['JWT_SECRET_KEY'] = 'jwt-secret-string'
 app.config.from_pyfile('config.py')
 auth_db.init_app(app)
